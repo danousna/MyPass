@@ -28,8 +28,6 @@ void writeFile(char * fileName, char * data, char * opt) {
     FILE *data_file = fopen(fileName, opt);
     fputs(data, data_file);
     fclose(data_file);
-
-    printf("Wrote to %s\n\n", fileName);
 }
 
 void readFile(char * fileName) {
@@ -53,12 +51,49 @@ void readFile(char * fileName) {
     }
 }
 
+void encryptData(char * password) {
+
+    // Calling openssl
+    char command[300] = "openssl enc -aes-256-cbc -salt -in ";
+    strcat(command, FILE_NAME); 
+    strcat(command, " -out ");
+    strcat(command, ENC_FILE_NAME);
+    strcat(command, " -k ");
+    strcat(command, password);
+    system(command);
+
+    memset(command, 0, strlen(command));
+
+    strcpy(command, "rm ");
+    strcat(command, FILE_NAME);
+    system(command);
+}
+
+void decryptData(char * password) {
+
+    // Calling openssl
+    char command[300] = "openssl enc -aes-256-cbc -d -in ";
+    strcat(command, ENC_FILE_NAME); 
+    strcat(command, " -out ");
+    strcat(command, FILE_NAME);
+    strcat(command, " -k ");
+    strcat(command, password);
+    system(command);
+
+    memset(command, 0, strlen(command));
+
+    strcpy(command, "rm ");
+    strcat(command, ENC_FILE_NAME);
+    system(command);
+
+}
+
 int fileExist() {
     if (access(FILE_NAME, F_OK) != -1) {
-        printf("\nA MyPass file has been detected in this directory.\n");
+        printf("\nA MyPass file has been detected in this directory.\n\n");
         return 1;
     } else {
-        printf("\nNo MyPass file has been detected in this directory.\n");
+        printf("\nNo MyPass file has been detected in this directory.\n\n");
         return 0;
     }
 }
@@ -76,8 +111,12 @@ void reset() {
         printf("Are you sure you want to delete your mypass file ? (Y/n)\n");
         scanf(" %c", &resetConfirm);
 
+        char command[30] = "rm ";
+
         switch (resetConfirm) {
             case 'Y':
+                strcat(command, FILE_NAME);
+                system(command);
                 printf("File has been deleted\n");
                 break;
             case 'n':
@@ -93,7 +132,7 @@ void reset() {
 void initialise() {
 
     // *** Init screen ***
-    printf("\nInitialisation of mypass file...\n\n");
+    printf("\nInitialisation of mypass file...\n");
 
 
     // *** Checking if file exists ***
@@ -139,9 +178,25 @@ void initialise() {
         memset(ptr, 0, strlen(ptr));
                 
         if (!strcmp(password, passwordConfirm)) {
-            printf("Password entry successful\n");
+            encryptData(password);
+            printf("\nMypass has been setup, you can now add accounts with the -add option\n\n");
         } else {
             printf("\nError: The two passwords don't match\n\n");
+        }
+    } else {
+        char resetConfirm = '\0';
+        printf("Do you wish to reset ? (This will delete the detected mypass file) (Y/n)\n");
+        scanf(" %c", &resetConfirm);
+        switch (resetConfirm) {
+            case 'Y':
+                reset();
+                break;
+            case 'n':
+                printf("Reset aborted\n");
+                break;
+            default:
+                printf("Error: Reset aborted, please retry.\n");
+                break;
         }
     }
 }
@@ -164,23 +219,28 @@ void add() {
         scanf("%s", tmp.password);
 
 
-        char data[200];
-        strcat(data, "\n\n");
-        strcpy(data, tmp.name);
+        char data[250];
+
+        long int id = time(NULL);
+        char * id_str = malloc(15);
+        // Convert long to str.
+        sprintf(id_str, "%li", id);
+
         strcat(data, "\n");
+        strcat(data, id_str);
+        strcat(data, "(");
+        strcat(data, tmp.name);
+        strcat(data, ",");
+        strcat(data, tmp.user);
+        strcat(data, ",");
+        strcat(data, tmp.password);
+        strcat(data, ")");
+
         writeFile(FILE_NAME, data, "a+");
 
         printf("\nAccount added with the following informations :\n");
         printf("%s\n", data);
     }
-}
-
-void encrypt() {
-
-}
-
-void decrypt() {
-
 }
 
 int main(int argc, char *argv[]) {
@@ -197,7 +257,7 @@ int main(int argc, char *argv[]) {
                 reset();
             }
             else if (!strcmp(argv[1], "-test")) {
-                printf("\nTest ok\n\n");
+                decryptData("Natan");
             }
             else if (!strcmp(argv[1], "-add")) {
                 add();
