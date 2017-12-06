@@ -6,11 +6,7 @@ Building a secure password manager app.
 
 ### Version 1
 
-Version 1 is a command line interface. You access your accounts with various commands.
-
-Tools    
-1. Parser or something to recognize with which argurment program is called.
-2. Read and write functions.
+V1 is just a command line interface. You access your accounts with various commands.
 
 Commands
 1. mypass -init
