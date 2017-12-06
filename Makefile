@@ -7,20 +7,13 @@ CFLAGS  = -Wall
 
 # The build target executable:
 TARGET = mypass
-TESTS = mypass_tests
+BUILD = build
 
 all: $(TARGET)
 
-test: $(TESTS)
-
 $(TARGET): $(TARGET).c
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
-
-$(TEST): $(TEST).c
-	$(CC) $(CFLAGS) -o $(TEST) $(TEST).c
+	$(CC) $(CFLAGS) -o $(BUILD)/$(TARGET) $(TARGET).c
 
 clean:
-	$(RM) $(TARGET)
-	$(RM) $(TESTS)
-	$(RM) .data.mypass
-	$(RM) .enc_data.mypass
+	$(RM) $(BUILD)/$(TARGET)
+	$(RM) $(BUILD)/.data.mypass
