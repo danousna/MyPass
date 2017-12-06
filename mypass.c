@@ -1,7 +1,7 @@
 /*
 Project :       MyPass
 Description :   MyPass is a password manager app.
-                This is the command line interface version of the app.
+                Command line interface version of the app.
 Author :        Natan Danous
 Date created :  22/11/2017
 Version :       0.0.1

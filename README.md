@@ -5,8 +5,7 @@
 Building a secure password manager app.
 
 ### Version 1
-
-V1 is just a command line interface. You access your accounts with various commands.
+For now, just a command line interface. You access your accounts with various commands.
 
 Commands
 1. mypass -init
@@ -16,4 +15,4 @@ Commands
 3. mypass -a
     - This adds an account, will then be prompted for infos about it.
 4. mypass -s
-    - This searches an account by name or user. 
+    - This searches an account by name or user.
