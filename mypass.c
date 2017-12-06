@@ -24,8 +24,8 @@ typedef struct {
     char password[60];
 } account;
 
-void writeFile(char * fileName, char * data) {
-    FILE *data_file = fopen(fileName, "w+");
+void writeFile(char * fileName, char * data, char * opt) {
+    FILE *data_file = fopen(fileName, opt);
     fputs(data, data_file);
     fclose(data_file);
 
@@ -119,7 +119,7 @@ void initialise() {
         strcat(header, time_str);
         
         // Write to file.
-        writeFile(FILE_NAME, header);
+        writeFile(FILE_NAME, header, "w+");
 
         // Free memory.
         free(header);
@@ -157,15 +157,21 @@ void add() {
         account tmp; 
 
         printf("Name: ");
-        scanf("%s\n", tmp.name);
+        scanf("%s", tmp.name);
         printf("User: ");
-        scanf("%s\n", tmp.user);
+        scanf("%s", tmp.user);
         printf("Password: ");
-        scanf("%s\n", tmp.password);
+        scanf("%s", tmp.password);
 
-        printf("Name: %s\n", tmp.name);
-        printf("User: %s\n", tmp.user);
-        printf("Password: %s\n", tmp.password);
+
+        char data[200];
+        strcat(data, "\n\n");
+        strcpy(data, tmp.name);
+        strcat(data, "\n");
+        writeFile(FILE_NAME, data, "a+");
+
+        printf("\nAccount added with the following informations :\n");
+        printf("%s\n", data);
     }
 }
 
