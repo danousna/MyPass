@@ -88,20 +88,32 @@ void decryptData(char * password) {
 
 }
 
-int fileExist() {
-    if (access(FILE_NAME, F_OK) != -1) {
-        printf("\nA MyPass file has been detected in this directory.\n\n");
-        return 1;
+int fileExist(char * opt) {
+    if (!strcmp(opt, "d")) {
+        if (access(FILE_NAME, F_OK) != -1) {
+            printf("\nA MyPass file has been detected in this directory.\n\n");
+            return 1;
+        } else {
+            printf("\nNo MyPass file has been detected in this directory.\n\n");
+            return 0;
+        }
+    } else if (!strcmp(opt, "e")) {
+        if (access(ENC_FILE_NAME, F_OK) != -1) {
+            printf("\nA MyPass file has been detected in this directory.\n\n");
+            return 1;
+        } else {
+            printf("\nNo MyPass file has been detected in this directory.\n\n");
+            return 0;
+        }
     } else {
-        printf("\nNo MyPass file has been detected in this directory.\n\n");
-        return 0;
+        perror("Cannot detect option");
     }
 }
 
 void reset() {
 
     // *** Checking if file exists ***
-    int continueReset = fileExist();
+    int continueReset = fileExist("d");
 
     if (continueReset) {
 
@@ -136,7 +148,7 @@ void initialise() {
 
 
     // *** Checking if file exists ***
-    int continueInit = fileExist();
+    int continueInit = fileExist("d");
 
     if (!continueInit) {
 
@@ -203,10 +215,21 @@ void initialise() {
 
 void add() {
 
-    // *** Checking if file exists ***
-    int continueAdd = fileExist();
+    // *** Checking if encrypted file exists ***
+    int encFileDetected = fileExist("e");
+    int decFileDetected = fileExist("d");
 
-    if (continueAdd) {
+    char password[60];
+    char * ptr;
+
+    ptr = getpass("Master password: ");
+    strcpy(password, ptr);
+    memset(ptr, 0, strlen(ptr));
+
+    if (encFileDetected) {
+
+        // *** Decrypting the file ***
+        decryptData(password);
 
         // *** Prompting user for informations ***
         account tmp;
@@ -238,8 +261,12 @@ void add() {
 
         writeFile(FILE_NAME, data, "a+");
 
+        encryptData(password);
+
         printf("\nAccount added with the following informations :\n");
         printf("%s\n", data);
+    } else if (decFileDetected) {
+        encryptData(password);
     }
 }
 

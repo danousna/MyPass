@@ -17,3 +17,4 @@ $(TARGET): $(TARGET).c
 clean:
 	$(RM) $(BUILD)/$(TARGET)
 	$(RM) $(BUILD)/.data.mypass
+	$(RM) $(BUILD)/.enc_data.mypass
