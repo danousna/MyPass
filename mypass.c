@@ -300,8 +300,12 @@ int main(int argc, char *argv[]) {
                 break;
         }
 
-        encryptData(password);
+        int decFileDetected = fileExist("d");
 
+        if (decFileDetected) {
+            encryptData(password);
+        }
+        
     } else {
         initialise();
     }
