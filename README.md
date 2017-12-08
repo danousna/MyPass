@@ -7,7 +7,7 @@ Building a secure password manager app.
 ### Version 1
 A command line interface. You access your accounts with various commands.
 
-Commands
+Commands:
 1. mypass -init
     - Creates and encrypt (with password) data file if not here. Hidden file with some infos (header).
 2. mypass -reset

@@ -30,7 +30,7 @@ void writeFile(char * fileName, char * data, char * opt) {
     fclose(data_file);
 }
 
-void readFile(char * fileName) {
+char * readFile(char * fileName) {
     char * buffer = 0;
     long length;
     FILE *data_file = fopen(fileName, "r");
@@ -47,7 +47,7 @@ void readFile(char * fileName) {
     }
 
     if (buffer) {
-        printf("%s\n", buffer);
+        return buffer;
     }
 }
 
@@ -246,10 +246,26 @@ void add() {
 
         writeFile(FILE_NAME, data, "a+");
 
-        printf("\nAccount added with the following informations :\n");
-        printf("%s\n", data);
+        printf("\nAccount added.\n");
     } else {
         perror("Cannot write to database");
+    }
+}
+
+void list() {
+
+    int i, line;
+    i = line = 0;
+
+    char * data = readFile(FILE_NAME);
+
+    for (i = 0; i < strlen(data); i++) {
+        if(data[i] == '\n') {
+            line++;
+        }
+        if (line >= 2) {
+            printf("%c", data[i]);
+        }
     }
 }
 
@@ -282,14 +298,13 @@ int main(int argc, char *argv[]) {
                 else if (!strcmp(argv[1], "-reset")) {
                     reset();
                 }
-                else if (!strcmp(argv[1], "-test")) {
-                    readFile(FILE_NAME);
-                }
+                // else if (!strcmp(argv[1], "-test")) {
+                // }
                 else if (!strcmp(argv[1], "-add")) {
                     add();
                 }
                 else if (!strcmp(argv[1], "-list")) {
-                    //list();
+                    list();
                 }
                 else {
                     printf("\nError: argument not recognized, try 'mypass -help'\n\n");
@@ -305,7 +320,7 @@ int main(int argc, char *argv[]) {
         if (decFileDetected) {
             encryptData(password);
         }
-        
+
     } else {
         initialise();
     }
