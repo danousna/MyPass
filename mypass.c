@@ -91,18 +91,14 @@ void decryptData(char * password) {
 int fileExist(char * opt) {
     if (!strcmp(opt, "d")) {
         if (access(FILE_NAME, F_OK) != -1) {
-            printf("\nA MyPass file has been detected in this directory.\n\n");
             return 1;
         } else {
-            printf("\nNo MyPass file has been detected in this directory.\n\n");
             return 0;
         }
     } else if (!strcmp(opt, "e")) {
         if (access(ENC_FILE_NAME, F_OK) != -1) {
-            printf("\nA MyPass file has been detected in this directory.\n\n");
             return 1;
         } else {
-            printf("\nNo MyPass file has been detected in this directory.\n\n");
             return 0;
         }
     } else {
@@ -113,9 +109,9 @@ int fileExist(char * opt) {
 void reset() {
 
     // *** Checking if file exists ***
-    int continueReset = fileExist("d");
+    int decFileDetected = fileExist("d");
 
-    if (continueReset) {
+    if (decFileDetected) {
 
         // *** Confirm reset ***
 
@@ -148,9 +144,9 @@ void initialise() {
 
 
     // *** Checking if file exists ***
-    int continueInit = fileExist("d");
+    int decFileDetected = fileExist("d");
 
-    if (!continueInit) {
+    if (!decFileDetected) {
 
         // *** Writing a header to data file (code is messy) ***
 
@@ -215,21 +211,10 @@ void initialise() {
 
 void add() {
 
-    // *** Checking if encrypted file exists ***
-    int encFileDetected = fileExist("e");
+    // *** Checking if decrypted file exists ***
     int decFileDetected = fileExist("d");
 
-    char password[60];
-    char * ptr;
-
-    ptr = getpass("Master password: ");
-    strcpy(password, ptr);
-    memset(ptr, 0, strlen(ptr));
-
-    if (encFileDetected) {
-
-        // *** Decrypting the file ***
-        decryptData(password);
+    if (decFileDetected) {
 
         // *** Prompting user for informations ***
         account tmp;
@@ -261,44 +246,65 @@ void add() {
 
         writeFile(FILE_NAME, data, "a+");
 
-        encryptData(password);
-
         printf("\nAccount added with the following informations :\n");
         printf("%s\n", data);
-    } else if (decFileDetected) {
-        encryptData(password);
+    } else {
+        perror("Cannot write to database");
     }
 }
 
 int main(int argc, char *argv[]) {
-    switch(argc) {
-        case 1:
-            printf("\nError: no arguments given, try 'mypass -help'\n\n");
-            break;
-        case 2:
-            // Main for single argument
-            if (!strcmp(argv[1], "-init")) {
-                initialise();
-            }
-            else if (!strcmp(argv[1], "-reset")) {
-                reset();
-            }
-            else if (!strcmp(argv[1], "-test")) {
-                decryptData("Natan");
-            }
-            else if (!strcmp(argv[1], "-add")) {
-                add();
-            }
-            else if (!strcmp(argv[1], "-list")) {
-                //list();
-            }
-            else {
-                printf("\nError: argument not recognized, try 'mypass -help'\n\n");
-            }
-            break;
-        case 3:
-            // Main for two arguments
-            break;
+
+    int encFileDetected = fileExist("e");
+
+    // User is not new
+    if (encFileDetected) {
+
+        // Master password to decrypt file.
+        char password[60];
+        char * ptr;
+
+        ptr = getpass("Master password: ");
+        strcpy(password, ptr);
+        memset(ptr, 0, strlen(ptr));
+
+        decryptData(password);
+
+        switch(argc) {
+            case 1:
+                printf("\nError: no arguments given, try 'mypass -help'\n\n");
+                break;
+            case 2:
+                // Main for single argument
+                if (!strcmp(argv[1], "-init")) {
+                    initialise();
+                }
+                else if (!strcmp(argv[1], "-reset")) {
+                    reset();
+                }
+                else if (!strcmp(argv[1], "-test")) {
+                    readFile(FILE_NAME);
+                }
+                else if (!strcmp(argv[1], "-add")) {
+                    add();
+                }
+                else if (!strcmp(argv[1], "-list")) {
+                    //list();
+                }
+                else {
+                    printf("\nError: argument not recognized, try 'mypass -help'\n\n");
+                }
+                break;
+            case 3:
+                // Main for two arguments
+                break;
+        }
+
+        encryptData(password);
+
+    } else {
+        initialise();
     }
+
     return 0;
 }
