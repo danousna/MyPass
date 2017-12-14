@@ -5,7 +5,7 @@
 Building a secure password manager app.
 
 ### Version 1
-A command line interface. You access your accounts with various commands.
+A command line interface. You access your accounts with various commands. Testing for gitlab
 
 Commands:
 1. mypass -init
